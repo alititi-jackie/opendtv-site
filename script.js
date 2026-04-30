@@ -35,120 +35,219 @@ const ADS = [
 ]
 
 // ===================================================
-// BANNER CAROUSEL
+// BANNER CAROUSEL (loop like Swiper)
+// - Adds clones (last + first) to achieve seamless looping
+// - Keeps autoplay 4000ms and continues after interaction
 // ===================================================
 ;(function initBanner() {
   const track = document.getElementById('bannerTrack')
   const dotsContainer = document.getElementById('bannerDots')
   if (!track || !dotsContainer) return
 
-  let current = 0
-  let total = ADS.length
+  let realTotal = ADS.length
+  let index = 0 // index in real slides
+
+  // internal position in track including clones: 0..realTotal+1
+  // we start at 1 (first real slide)
+  let pos = 1
+
   let autoplayTimer = null
   let touchStartX = 0
   let touchStartY = 0
   let isDragging = false
   let dragOffsetX = 0
+  let isAnimating = false
 
-  // Build slides
+  const wrapper = track.parentElement
+
+  function buildSlideEl(ad, i) {
+    const a = document.createElement('a')
+    a.href = ad.link
+    a.target = '_blank'
+    a.rel = 'noopener noreferrer'
+    a.className = 'banner-slide'
+
+    const img = new Image()
+    img.alt = ad.alt || ''
+    img.draggable = false
+    img.loading = i === 0 ? 'eager' : 'lazy'
+
+    img.onerror = function() {
+      const ph = document.createElement('div')
+      ph.className = 'banner-placeholder'
+      ph.innerHTML = '<span>' + (ad.alt || 'OpenAA') + '</span>'
+      a.replaceChild(ph, img)
+    }
+
+    img.src = ad.image
+    a.appendChild(img)
+    return a
+  }
+
   function buildSlides() {
     track.innerHTML = ''
     dotsContainer.innerHTML = ''
 
-    ADS.forEach(function(ad, i) {
-      const a = document.createElement('a')
-      a.href = ad.link
-      a.target = '_blank'
-      a.rel = 'noopener noreferrer'
-      a.className = 'banner-slide'
+    realTotal = ADS.length
 
-      const img = new Image()
-      img.alt = ad.alt || ''
-      img.draggable = false
-      img.loading = i === 0 ? 'eager' : 'lazy'
+    if (realTotal === 0) return
 
-      // On error: show placeholder
-      img.onerror = function() {
-        const ph = document.createElement('div')
-        ph.className = 'banner-placeholder'
-        ph.innerHTML = '<span>' + (ad.alt || 'OpenAA') + '</span>'
-        a.replaceChild(ph, img)
-      }
-      img.src = ad.image
-      a.appendChild(img)
-      track.appendChild(a)
+    // clones for seamless loop
+    const first = ADS[0]
+    const last = ADS[realTotal - 1]
 
-      // Dot
+    // [cloneLast, ...real, cloneFirst]
+    track.appendChild(buildSlideEl(last, -1))
+    ADS.forEach((ad, i) => track.appendChild(buildSlideEl(ad, i)))
+    track.appendChild(buildSlideEl(first, realTotal))
+
+    // dots for real slides
+    ADS.forEach(function(_, i) {
       const dot = document.createElement('button')
       dot.className = 'banner-dot' + (i === 0 ? ' active' : '')
       dot.setAttribute('aria-label', '第' + (i + 1) + '张')
       dot.type = 'button'
-      dot.addEventListener('click', function() { goTo(i); resetAutoplay() })
+      dot.addEventListener('click', function() {
+        goToReal(i, true)
+      })
       dotsContainer.appendChild(dot)
     })
 
-    total = ADS.length
+    // start at first real
+    pos = 1
+    index = 0
+    jumpToPos(pos)
+    updateDots()
   }
 
   function updateDots() {
     const dots = dotsContainer.querySelectorAll('.banner-dot')
     dots.forEach(function(d, i) {
-      d.classList.toggle('active', i === current)
+      d.classList.toggle('active', i === index)
     })
   }
 
-  function goTo(index) {
-    if (total === 0) return
-    current = ((index % total) + total) % total
-    track.style.transform = 'translateX(-' + (current * 100) + '%)'
+  function setTransition(enabled) {
+    track.style.transition = enabled ? '' : 'none'
+  }
+
+  function translateToPos(p) {
+    track.style.transform = 'translateX(-' + (p * 100) + '%)'
+  }
+
+  function jumpToPos(p) {
+    setTransition(false)
+    translateToPos(p)
+    // force reflow so next transition works
+    // eslint-disable-next-line no-unused-expressions
+    track.offsetHeight
+    setTransition(true)
+  }
+
+  function goToPos(p, userInitiated) {
+    if (realTotal <= 0) return
+    if (isAnimating) return
+    isAnimating = true
+
+    if (userInitiated) resetAutoplay()
+
+    pos = p
+    translateToPos(pos)
+
+    // keep index in range for dots (approximate; corrected on transitionend)
+    if (pos === 0) index = realTotal - 1
+    else if (pos === realTotal + 1) index = 0
+    else index = pos - 1
     updateDots()
   }
 
-  function next() { goTo(current + 1) }
-  function prev() { goTo(current - 1) }
+  function goToReal(realIndex, userInitiated) {
+    const p = realIndex + 1
+    goToPos(p, userInitiated)
+  }
+
+  function next(userInitiated) {
+    goToPos(pos + 1, userInitiated)
+  }
+
+  function prev(userInitiated) {
+    goToPos(pos - 1, userInitiated)
+  }
 
   function startAutoplay() {
-    autoplayTimer = setInterval(next, 4000)
+    clearInterval(autoplayTimer)
+    if (realTotal <= 1) return
+    autoplayTimer = setInterval(function() {
+      next(false)
+    }, 4000)
   }
 
   function resetAutoplay() {
-    clearInterval(autoplayTimer)
+    // Swiper's disableOnInteraction:false behavior
     startAutoplay()
   }
 
-  // Touch / swipe support
-  const wrapper = track.parentElement
-  wrapper.addEventListener('touchstart', function(e) {
-    touchStartX = e.touches[0].clientX
-    touchStartY = e.touches[0].clientY
-    isDragging = false
-    dragOffsetX = 0
-    clearInterval(autoplayTimer)
-  }, { passive: true })
+  track.addEventListener('transitionend', function() {
+    // when we reach clones, jump to corresponding real slide without animation
+    if (pos === 0) {
+      pos = realTotal
+      index = realTotal - 1
+      jumpToPos(pos)
+      updateDots()
+    } else if (pos === realTotal + 1) {
+      pos = 1
+      index = 0
+      jumpToPos(pos)
+      updateDots()
+    }
+    isAnimating = false
+  })
 
-  wrapper.addEventListener('touchmove', function(e) {
-    const dx = e.touches[0].clientX - touchStartX
-    const dy = e.touches[0].clientY - touchStartY
-    if (!isDragging && Math.abs(dy) > Math.abs(dx)) return
-    isDragging = true
-    dragOffsetX = dx
-    // live drag feedback
-    const baseOffset = current * 100
-    track.style.transition = 'none'
-    track.style.transform = 'translateX(calc(-' + baseOffset + '% + ' + dragOffsetX + 'px))'
-  }, { passive: true })
+  // Touch / swipe support
+  wrapper.addEventListener(
+    'touchstart',
+    function(e) {
+      touchStartX = e.touches[0].clientX
+      touchStartY = e.touches[0].clientY
+      isDragging = false
+      dragOffsetX = 0
+      clearInterval(autoplayTimer)
+    },
+    { passive: true }
+  )
+
+  wrapper.addEventListener(
+    'touchmove',
+    function(e) {
+      const dx = e.touches[0].clientX - touchStartX
+      const dy = e.touches[0].clientY - touchStartY
+      if (!isDragging && Math.abs(dy) > Math.abs(dx)) return
+      isDragging = true
+      dragOffsetX = dx
+      const baseOffset = pos * 100
+      setTransition(false)
+      track.style.transform = 'translateX(calc(-' + baseOffset + '% + ' + dragOffsetX + 'px))'
+    },
+    { passive: true }
+  )
 
   wrapper.addEventListener('touchend', function() {
-    track.style.transition = ''
-    if (!isDragging) { startAutoplay(); return }
+    setTransition(true)
+    if (!isDragging) {
+      startAutoplay()
+      return
+    }
+
     const threshold = wrapper.offsetWidth * 0.2
     if (dragOffsetX < -threshold) {
-      next()
+      next(true)
     } else if (dragOffsetX > threshold) {
-      prev()
+      prev(true)
     } else {
-      goTo(current)
+      // snap back
+      translateToPos(pos)
     }
+
     isDragging = false
     startAutoplay()
   })
@@ -163,10 +262,7 @@ const ADS = [
   })
 
   buildSlides()
-  if (total > 0) {
-    goTo(0)
-    startAutoplay()
-  }
+  startAutoplay()
 })()
 
 // ===================================================
@@ -176,11 +272,11 @@ const ADS = [
 // Category "全部" shows all; others show from their start module down
 
 var categoryStartModule = {
-  all:  null,          // show all
-  gov:  'gov',
+  all: null, // show all
+  gov: 'gov',
   bank: 'bank',
   shop: 'shop',
-  dmv:  'dmv'
+  dmv: 'dmv'
 }
 
 function switchCategory(cat, btn) {
@@ -298,11 +394,14 @@ function shareOpenAA() {
     // Fallback: copy to clipboard
     var url = shareData.url
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(url).then(function() {
-        showToast('链接已复制 📋')
-      }).catch(function() {
-        showToast('分享：' + url)
-      })
+      navigator.clipboard
+        .writeText(url)
+        .then(function() {
+          showToast('链接已复制 📋')
+        })
+        .catch(function() {
+          showToast('分享：' + url)
+        })
     } else {
       var ta = document.createElement('textarea')
       ta.value = url
@@ -310,7 +409,10 @@ function shareOpenAA() {
       ta.style.opacity = '0'
       document.body.appendChild(ta)
       ta.select()
-      try { document.execCommand('copy'); showToast('链接已复制 📋') } catch(e) {}
+      try {
+        document.execCommand('copy')
+        showToast('链接已复制 📋')
+      } catch (e) {}
       document.body.removeChild(ta)
     }
   }
@@ -342,5 +444,7 @@ function showToast(msg) {
     'box-shadow:0 4px 16px rgba(0,0,0,0.2)'
   ].join(';')
   document.body.appendChild(toast)
-  setTimeout(function() { toast.remove() }, 2500)
+  setTimeout(function() {
+    toast.remove()
+  }, 2500)
 }
