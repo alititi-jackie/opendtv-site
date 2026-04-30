@@ -134,7 +134,6 @@ const ADS = [
     dragOffsetX = dx
     // live drag feedback
     const baseOffset = current * 100
-    const pixelOffset = (dragOffsetX / wrapper.offsetWidth) * 100
     track.style.transition = 'none'
     track.style.transform = 'translateX(calc(-' + baseOffset + '% + ' + dragOffsetX + 'px))'
   }, { passive: true })
