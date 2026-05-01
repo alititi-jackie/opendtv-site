@@ -73,9 +73,9 @@
       </div>
     </section>
 
-    <!-- 3. 搜索框 -->
+    <!-- 3. 搜索框 (Google Search) -->
     <section class="search-section">
-      <div class="search-wrapper">
+      <form class="search-wrapper" action="https://www.google.com/search" method="GET" target="_self" rel="noopener" onsubmit="return handleGoogleSearchSubmit(event)">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"/>
           <line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -83,18 +83,19 @@
         <input
           type="search"
           id="searchInput"
+          name="q"
           class="search-input"
-          placeholder="搜索网站、工具、DMV、银行、购物等"
+          placeholder="Google 搜索：网站、工具、DMV、银行、购物等"
           autocomplete="off"
-          oninput="handleSearch(this.value)"
         />
-        <button class="search-clear" id="searchClear" type="button" onclick="clearSearch()" aria-label="清除搜索">
+        <button class="search-clear" id="searchClear" type="button" onclick="clearGoogleSearch()" aria-label="清除搜索">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"/>
             <line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>
-      </div>
+        <button class="search-submit" type="submit" aria-label="搜索">搜索</button>
+      </form>
     </section>
 
     <!-- 4. 8 宫格入口 -->
@@ -486,7 +487,7 @@
         <div class="module-header">
           <span class="module-icon ai">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/>
+              <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-0.99-1-1.73a2 2 0 0 1 2-2Z"/>
               <circle cx="9" cy="14" r="1" fill="currentColor"/>
               <circle cx="15" cy="14" r="1" fill="currentColor"/>
             </svg>
