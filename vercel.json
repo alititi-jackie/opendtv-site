@@ -1,0 +1,1 @@
+{"redirects":[{"source":"/index.html","destination":"/","permanent":true},{"source":"/catalog.html","destination":"/streaming.html","permanent":false}],"headers":[{"source":"/(.*)","headers":[{"key":"X-Content-Type-Options","value":"nosniff"},{"key":"Referrer-Policy","value":"strict-origin-when-cross-origin"}]}]}
