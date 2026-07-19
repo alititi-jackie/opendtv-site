@@ -1,135 +1,33 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OpenDTV - 海外华人娱乐入口</title>
-  <meta name="description" content="提供影视平台、电视直播、TV应用与设备导航，专为海外华人打造的娱乐中心。" />
-  <meta name="keywords" content="海外华人,影视平台,电视直播,IPTV,TV应用,电视设备,OpenDTV" />
-  <meta property="og:title" content="OpenDTV - 海外华人娱乐入口" />
-  <meta property="og:description" content="影视 | 电视 | APP | 设备" />
-  <meta property="og:type" content="website" />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>OpenDTV｜海外华人影视、电视、应用与设备导航</title>
+  <meta name="description" content="OpenDTV 为海外华人整理合法影视平台、免费电视服务、TV 应用、电视设备与安装指南。">
+  <link rel="canonical" href="https://opendtv.com/">
+  <meta property="og:title" content="OpenDTV｜海外华人娱乐入口">
+  <meta property="og:description" content="影视平台、电视服务、TV 应用、设备与实用指南。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://opendtv.com/">
+  <meta name="theme-color" content="#0b1020">
+  <link rel="stylesheet" href="style-v2.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"OpenDTV","url":"https://opendtv.com/","description":"海外华人影视、电视、应用与设备导航"}</script>
 </head>
-<body>
-
-  <!-- ===== HEADER / NAV ===== -->
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="/" class="logo">
-        <span class="logo-icon">📺</span>
-        <span class="logo-text">OpenDTV</span>
-      </a>
-      <nav class="nav-links">
-        <a href="/streaming.html">影视</a>
-        <a href="/livetv.html">电视</a>
-        <a href="/apps.html">APP</a>
-        <a href="/devices.html">设备</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- ===== HERO ===== -->
-  <section class="hero">
-    <div class="hero-bg-grid" aria-hidden="true"></div>
-    <div class="container hero-inner">
-      <div class="hero-badge">🌐 海外华人专属</div>
-      <h1 class="hero-title">OpenDTV</h1>
-      <p class="hero-subtitle">海外华人娱乐入口 ｜ 影视 ｜ 电视 ｜ APP ｜ 设备</p>
-      <form class="search-form" role="search" onsubmit="handleSearch(event)">
-        <div class="search-wrapper">
-          <span class="search-icon">🔍</span>
-          <input
-            type="search"
-            id="search-input"
-            class="search-input"
-            placeholder="搜索影视平台、应用、设备…"
-            aria-label="搜索"
-          />
-          <button type="submit" class="search-btn">搜索</button>
-        </div>
-      </form>
-    </div>
-  </section>
-
-  <!-- ===== FOUR NAV CARDS ===== -->
-  <section class="section">
-    <div class="container">
-      <h2 class="section-title">快速导航</h2>
-      <p class="section-sub">选择你想探索的类目，开启娱乐之旅</p>
-      <div class="nav-cards-grid">
-
-        <a href="/streaming.html" class="nav-card nav-card--streaming">
-          <div class="nav-card-icon">🎬</div>
-          <div class="nav-card-body">
-            <h3>影视平台</h3>
-            <p>Netflix、Disney+、爱奇艺、优酷……一站导航全球流媒体</p>
-          </div>
-          <span class="nav-card-arrow">→</span>
-        </a>
-
-        <a href="/livetv.html" class="nav-card nav-card--livetv">
-          <div class="nav-card-icon">📺</div>
-          <div class="nav-card-body">
-            <h3>电视直播</h3>
-            <p>IPTV 直播频道精选，高清华语及海外电视实时收看</p>
-          </div>
-          <span class="nav-card-arrow">→</span>
-        </a>
-
-        <a href="/apps.html" class="nav-card nav-card--apps">
-          <div class="nav-card-icon">📱</div>
-          <div class="nav-card-body">
-            <h3>TV 应用</h3>
-            <p>电视盒子 App 推荐与下载，让大屏娱乐更丰富</p>
-          </div>
-          <span class="nav-card-arrow">→</span>
-        </a>
-
-        <a href="/devices.html" class="nav-card nav-card--devices">
-          <div class="nav-card-icon">📦</div>
-          <div class="nav-card-body">
-            <h3>电视设备</h3>
-            <p>Fire TV、Apple TV、小米盒子等设备横向评测与选购指南</p>
-          </div>
-          <span class="nav-card-arrow">→</span>
-        </a>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== FEATURED / HOT PICKS ===== -->
-  <section class="section section--alt">
-    <div class="container">
-      <h2 class="section-title">热门推荐</h2>
-      <p class="section-sub">精选平台与工具，海外收看首选</p>
-      <div class="featured-grid" id="featured-grid">
-        <!-- Rendered by script.js -->
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== FOOTER ===== -->
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <div class="footer-brand">
-        <span class="logo-icon">📺</span>
-        <span class="logo-text">OpenDTV</span>
-      </div>
-      <nav class="footer-nav">
-        <a href="/streaming.html">影视平台</a>
-        <a href="/livetv.html">电视直播</a>
-        <a href="/apps.html">TV 应用</a>
-        <a href="/devices.html">电视设备</a>
-      </nav>
-      <p class="footer-copy">© 2026 OpenDTV · 海外华人娱乐导航</p>
-    </div>
-  </footer>
-
-  <script src="script.js"></script>
-</body>
-</html>
+<body data-page="home">
+<header class="header"><div class="wrap bar"><a class="brand" href="index.html"><span>▶</span>OpenDTV</a><button class="menu" aria-label="打开菜单">☰</button><nav><a href="catalog.html?type=streaming">影视</a><a href="catalog.html?type=livetv">电视</a><a href="catalog.html?type=apps">应用</a><a href="catalog.html?type=devices">设备</a><a href="guides.html">指南</a></nav></div></header>
+<main>
+<section class="hero"><div class="wrap"><span class="eyebrow">海外华人娱乐导航</span><h1>把好用的影视、电视与大屏工具，整理到一个地方</h1><p>只收录公开、合法、可核验的平台和官方入口。支持搜索、分类筛选与设备选择。</p><form id="searchForm" class="search"><input id="searchInput" type="search" placeholder="搜索 Netflix、免费电视、Fire TV…" autocomplete="off"><button>搜索</button></form><div id="searchResults" class="search-results" hidden></div></div></section>
+<section class="wrap section"><div class="section-head"><div><span class="eyebrow">四大栏目</span><h2>快速找到你需要的内容</h2></div></div><div class="category-grid">
+<a class="category" href="catalog.html?type=streaming"><b>🎬 影视平台</b><span>主流订阅与免费点播服务</span></a>
+<a class="category" href="catalog.html?type=livetv"><b>📺 电视服务</b><span>合法网络电视与免费频道平台</span></a>
+<a class="category" href="catalog.html?type=apps"><b>📱 TV 应用</b><span>官方应用、播放器与投屏工具</span></a>
+<a class="category" href="catalog.html?type=devices"><b>📦 电视设备</b><span>流媒体盒子与选购建议</span></a>
+</div></section>
+<section class="soft"><div class="wrap section"><div class="section-head"><div><span class="eyebrow">编辑推荐</span><h2>热门平台与设备</h2></div><a href="catalog.html?type=all">查看全部 →</a></div><div id="featuredGrid" class="card-grid"></div></div></section>
+<section class="wrap section"><div class="section-head"><div><span class="eyebrow">新手入口</span><h2>从这几篇指南开始</h2></div><a href="guides.html">全部指南 →</a></div><div class="guide-grid"><a href="guides.html#choose-device"><b>如何选择电视盒子</b><span>按预算、生态与使用习惯选择</span></a><a href="guides.html#free-tv"><b>免费电视怎么看</b><span>认识广告支持型合法平台</span></a><a href="guides.html#safe-install"><b>安全安装 TV 应用</b><span>优先官方商店与开发者网站</span></a></div></section>
+<section class="notice"><div class="wrap"><b>内容说明：</b>OpenDTV 不托管视频、直播流或安装包，仅提供第三方服务介绍和官方入口。服务范围、价格与地区可用性以平台最新说明为准。</div></section>
+</main>
+<footer><div class="wrap footer-grid"><div><a class="brand" href="index.html"><span>▶</span>OpenDTV</a><p>海外华人影视、电视、应用与设备导航。</p></div><div><b>栏目</b><a href="catalog.html?type=streaming">影视平台</a><a href="catalog.html?type=livetv">电视服务</a><a href="catalog.html?type=apps">TV 应用</a><a href="catalog.html?type=devices">电视设备</a></div><div><b>网站</b><a href="guides.html">使用指南</a><a href="about.html">关于与联系</a><a href="legal.html">隐私、条款与免责声明</a></div></div><div class="wrap copyright">© 2026 OpenDTV · opendtv.com</div></footer>
+<script src="app-v2.js"></script>
+</body></html>
