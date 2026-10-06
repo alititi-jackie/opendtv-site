@@ -1,6 +1,6 @@
 /* OpenDTV service worker: offline support + installability.
  * Bump CACHE_VERSION when shipping changes that must reach users immediately. */
-const CACHE_VERSION = 'opendtv-v1';
+const CACHE_VERSION = 'opendtv-v2';
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 
@@ -76,16 +76,6 @@ async function networkFirst(request, cacheName, fallbackUrl) {
   }
 }
 
-// Static assets: cache-first. No cache + offline fetch failure rejects naturally.
-async function cacheFirst(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
-  if (cached) return cached;
-  const response = await fetch(request);
-  if (response && response.ok) cache.put(request, response.clone());
-  return response;
-}
-
 // Everything else same-origin: stale-while-revalidate.
 // No .catch() here on purpose: with no cached copy and the network down,
 // the promise rejects so the browser handles it as a normal network error.
@@ -114,7 +104,7 @@ self.addEventListener('fetch', (event) => {
     /\.(css|js|svg|png|ico|webmanifest)$/i.test(url.pathname) ||
     url.pathname.startsWith('/assets/')
   ) {
-    event.respondWith(cacheFirst(request, STATIC_CACHE));
+    event.respondWith(staleWhileRevalidate(request, STATIC_CACHE));
     return;
   }
 
