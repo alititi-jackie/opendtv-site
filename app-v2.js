@@ -7,6 +7,13 @@ const items=[
 {id:'tubi',type:'streaming',icon:'T',name:'Tubi',desc:'由广告支持的免费电影和电视剧点播平台。',tags:['免费','广告支持'],url:'https://tubitv.com/'},
 {id:'youtube',type:'streaming',icon:'▶',name:'YouTube',desc:'视频、直播、频道与电视端应用覆盖广泛。',tags:['免费','多设备'],url:'https://www.youtube.com/'},
 {id:'iqiyi',type:'streaming',icon:'爱',name:'爱奇艺国际版',desc:'面向海外用户的华语影视与综艺平台。',tags:['华语','海外版'],url:'https://www.iq.com/'},
+{id:'douyin',type:'streaming',icon:'抖',name:'抖音',desc:'国内主流短视频平台，海外可直接使用官方 App 与网页版。',tags:['华语','短视频'],url:'https://www.douyin.com/'},
+{id:'tiktok',type:'streaming',icon:'T',name:'TikTok',desc:'抖音海外版，国际短视频内容与直播平台。',tags:['短视频','海外版'],url:'https://www.tiktok.com/'},
+{id:'xiaohongshu',type:'streaming',icon:'红',name:'小红书',desc:'生活方式社区，短视频、图文与直播内容丰富，海外可直接访问。',tags:['华语','社区'],url:'https://www.xiaohongshu.com/'},
+{id:'bilibili',type:'streaming',icon:'B',name:'哔哩哔哩',desc:'国内综合视频平台，番剧、影视、直播与 UP 主内容，海外可直接观看。',tags:['华语','综合'],url:'https://www.bilibili.com/'},
+{id:'wetv',type:'streaming',icon:'W',name:'腾讯视频 WeTV',desc:'腾讯视频海外版，华语剧集、综艺与电影，多语言字幕。',tags:['华语','海外版'],url:'https://wetv.vip/'},
+{id:'youku-intl',type:'streaming',icon:'优',name:'优酷国际版',desc:'优酷国际站，华语剧集、综艺、动漫与短剧，多语言本地化。',tags:['华语','海外版'],url:'https://youku.tv/'},
+{id:'mgtv-intl',type:'streaming',icon:'芒',name:'芒果TV国际版',desc:'芒果TV国际站，湖南卫视综艺与剧集，多语言字幕配音。',tags:['华语','海外版'],url:'https://w.mgtv.com/'},
 {id:'pluto',type:'livetv',icon:'P',name:'Pluto TV',desc:'提供广告支持的免费直播频道和点播内容。',tags:['免费','直播频道'],url:'https://pluto.tv/'},
 {id:'plex',type:'livetv',icon:'P',name:'Plex Live TV',desc:'Plex 提供的免费直播频道与点播内容入口。',tags:['免费','电视'],url:'https://www.plex.tv/watch-free-tv/'},
 {id:'sling-freestream',type:'livetv',icon:'S',name:'Sling Freestream',desc:'Sling 提供的免费频道与点播内容服务。',tags:['免费','美国'],url:'https://www.sling.com/freestream'},
@@ -46,3 +53,4 @@ function setupGlobalNavigation(){document.querySelectorAll('a.brand').forEach(a=
 function setupMenu(){const b=document.querySelector('.menu'),n=document.querySelector('.header nav');if(!b||!n)return;b.setAttribute('aria-expanded','false');const close=()=>{n.classList.remove('open');b.textContent='☰';b.setAttribute('aria-expanded','false')};b.addEventListener('click',e=>{e.stopPropagation();const open=n.classList.toggle('open');b.textContent=open?'×':'☰';b.setAttribute('aria-expanded',String(open))});n.addEventListener('click',e=>{if(e.target.closest('a'))close()});document.addEventListener('click',e=>{if(!n.contains(e.target)&&e.target!==b)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape')close()})}
 function setupBackToTop(){const button=document.createElement('button');button.className='back-to-top';button.type='button';button.setAttribute('aria-label','返回顶部');button.textContent='↑';document.body.appendChild(button);const update=()=>button.classList.toggle('show',scrollY>500);addEventListener('scroll',update,{passive:true});update();button.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}))}
 setupGlobalNavigation();renderHome();renderCatalog();setupSearch();setupMenu();setupBackToTop();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{})});}

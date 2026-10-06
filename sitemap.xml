@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://opendtv.com/</loc><lastmod>2026-07-19</lastmod></url>
-  <url><loc>https://opendtv.com/streaming.html</loc><lastmod>2026-07-19</lastmod></url>
-  <url><loc>https://opendtv.com/livetv.html</loc><lastmod>2026-07-19</lastmod></url>
-  <url><loc>https://opendtv.com/apps.html</loc><lastmod>2026-07-19</lastmod></url>
-  <url><loc>https://opendtv.com/devices.html</loc><lastmod>2026-07-19</lastmod></url>
-  <url><loc>https://opendtv.com/guides.html</loc><lastmod>2026-07-19</lastmod></url>
-  <url><loc>https://opendtv.com/guides/choose-streaming-device.html</loc><lastmod>2026-07-19</lastmod></url>
-  <url><loc>https://opendtv.com/guides/watch-free-tv.html</loc><lastmod>2026-07-19</lastmod></url>
-  <url><loc>https://opendtv.com/guides/install-tv-apps-safely.html</loc><lastmod>2026-07-19</lastmod></url>
-  <url><loc>https://opendtv.com/guides/fix-tv-buffering.html</loc><lastmod>2026-07-19</lastmod></url>
-  <url><loc>https://opendtv.com/about.html</loc><lastmod>2026-07-19</lastmod></url>
-  <url><loc>https://opendtv.com/legal.html</loc><lastmod>2026-07-19</lastmod></url>
+  <url><loc>https://opendtv.com/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://opendtv.com/streaming.html</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://opendtv.com/livetv.html</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://opendtv.com/apps.html</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://opendtv.com/devices.html</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://opendtv.com/catalog.html</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://opendtv.com/guides.html</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://opendtv.com/guides/choose-streaming-device.html</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://opendtv.com/guides/watch-free-tv.html</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://opendtv.com/guides/install-tv-apps-safely.html</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://opendtv.com/guides/fix-tv-buffering.html</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://opendtv.com/about.html</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://opendtv.com/legal.html</loc><lastmod>2026-10-06</lastmod></url>
 </urlset>
