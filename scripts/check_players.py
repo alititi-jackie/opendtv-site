@@ -30,11 +30,13 @@ async def main():
         if os.getenv('PLAYER_PROXY'):opts['proxy']={'server':os.environ['PLAYER_PROXY'],'bypass':'127.0.0.1,localhost'}
         browser=await p.chromium.launch(executable_path=os.getenv('CHROME_PATH') or shutil.which('google-chrome'),args=['--autoplay-policy=no-user-gesture-required','--no-sandbox'],**opts)
         sem=asyncio.Semaphore(4)
+        attempted={}
         async def check(v):
             async with sem:
                 key='video/'+v['stableId']
                 state=health.setdefault(key,{'result':'review','hidden':False,'checked':str(today),'misses':0})
                 if state.get('result') in ('unavailable','external') or state.get('hidden'):return
+                attempted[key]=v['platform']
                 pg=await browser.new_page(ignore_https_errors=bool(os.getenv('PLAYER_PROXY')))
                 try:
                     # Exercise the shipped click-to-load control.
@@ -59,6 +61,12 @@ async def main():
                 finally:await pg.close()
         await asyncio.gather(*(check(v) for v in queue))
         await browser.close()
+        for platform in set(attempted.values()):
+            batch=[health[k]['playback'] for k,p in attempted.items() if p==platform]
+            if len(batch)>=3 and all(x['result']=='review' for x in batch):
+                # A runner-wide provider failure is inconclusive for each individual video.
+                for result in batch:
+                    result.update(result='provider-review',failures=1)
     server.server_close()
     write(report,health)
     print('Player results:',[(k,s['playback']['result']) for k,s in health.items() if 'playback' in s])
