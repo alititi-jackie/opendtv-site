@@ -466,5 +466,41 @@
       "网络"
     ],
     "url": "guides/fix-tv-buffering.html"
+  },
+  {
+    "id": "reelshort",
+    "type": "streaming",
+    "icon": "R",
+    "name": "ReelShort",
+    "desc": "英文原创竖屏短剧平台，每集几分钟，欧美演员与本地化题材。",
+    "tags": [
+      "短剧",
+      "海外版"
+    ],
+    "url": "https://www.reelshort.com/"
+  },
+  {
+    "id": "dramabox",
+    "type": "streaming",
+    "icon": "D",
+    "name": "DramaBox",
+    "desc": "译制国产短剧数量多的短剧平台，配音与字幕版本齐全。",
+    "tags": [
+      "短剧",
+      "华语"
+    ],
+    "url": "https://www.dramabox.com/"
+  },
+  {
+    "id": "shortmax",
+    "type": "streaming",
+    "icon": "S",
+    "name": "ShortMax",
+    "desc": "增长快的短剧平台，译制剧为主，支持电视端观看。",
+    "tags": [
+      "短剧",
+      "华语"
+    ],
+    "url": "https://www.shorttv.live/"
   }
 ]
