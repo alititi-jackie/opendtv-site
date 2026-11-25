@@ -3,6 +3,7 @@ import argparse
 import os
 from datetime import date, timedelta
 from concurrent.futures import ThreadPoolExecutor
+from http.client import HTTPException
 from urllib.error import HTTPError
 from urllib.request import urlopen, Request
 from urllib.parse import urlsplit
@@ -23,7 +24,7 @@ def inspect_url(url,marker=None,image=False):
             if re.search(r'<title[^>]*>[^<]*(access denied|just a moment|301 moved|page not found|robot check)',text,re.I):return 'review'
             return 'ok'
     except HTTPError as exc:return 'missing' if exc.code in (404,410) else 'review'
-    except (OSError,ValueError):return 'review'
+    except (OSError,ValueError,HTTPException):return 'review'
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--previous');args=parser.parse_args()
     prev=read(__import__('pathlib').Path(args.previous)) if args.previous else {}
