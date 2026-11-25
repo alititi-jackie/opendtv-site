@@ -12,6 +12,7 @@ choice_notes = records('choices')
 checkpoints = records('checkpoints')
 live_notes = records('live')
 category_notes = records('categories')
+movies_notes = records('movies')
 legacy_notes = records('legacy')
 legacy_tasks = records('legacy-tables')
 
@@ -192,7 +193,9 @@ for x in directory:
 def dirbody():
     return ''.join(section(n,platformlist(x for x in directory if x['type']==k),'/'+k+'.html') for k,n in types.items())
 page('/directory/','平台导航','浏览影视平台、电视服务、播放器、投屏工具及电视设备。',intro('平台导航')+dirbody())
-page('/movies/','影视天地','官方电影预告、正版免费影视与观看指南。',intro('影视天地')+section('官方预告',grid(card(v) for v in video if v['category']=='trailers'))+section('正版免费影视',platformlist(x for x in directory if x['id'] in ('tubi','plex','roku-channel','pluto')))+section('观看指南',guidetiles([g for g in guides if 'free-tv' in g[0] or 'watch-chinese' in g[0]])))
+trailers=[v for v in video if v['category']=='trailers']
+mh1,mb1,mh2,mb2,mh3,mb3 = movies_notes['movies']
+page('/movies/','影视天地','官方电影预告、正版免费影视与观看指南。',intro('影视天地','先看官方预告判断题材，再从正版免费平台和华语国际版里找正片。')+article([(mh1,mb1),(mh2,mb2),(mh3,mb3)])+section('官方预告',grid(card(v) for v in trailers))+section('预告导读',film_notes(trailers))+section('正版免费影视',platformlist(x for x in directory if x['id'] in ('tubi','plex','roku-channel','pluto')))+section('华语影视平台',platformlist(x for x in directory if x['id'] in ('iqiyi','wetv','youku-intl','mgtv-intl','bilibili')))+section('观看指南',guidetiles([g for g in guides if 'free-tv' in g[0] or 'watch-chinese' in g[0]])))
 # Retain the original article bodies, IDs, relative links and parameterized catalog.
 for f in sorted(ROOT.glob('*.html')):
     if f.name=='index.html':continue
