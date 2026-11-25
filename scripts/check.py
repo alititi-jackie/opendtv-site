@@ -34,8 +34,6 @@ for p,t in pages.items():
         if u.fragment and path in pages and unquote(u.fragment) not in pages[path].ids:errors.append((p,href))
 for f in list(ROOT.glob('*.html'))+list((ROOT/'guides').glob('*.html')):
     if not (out/f.relative_to(ROOT)).exists():errors.append(('legacy',str(f)))
-urls={x.text for x in ET.parse(out/'sitemap.xml').iter('{*}loc')}
-# ElementTree wildcard iteration is version-dependent; use findall for namespaces.
 urls={x.text for x in ET.parse(out/'sitemap.xml').findall('.//{*}loc')}
 assert urls=={'https://opendtv.com'+p for p,t in pages.items() if not t.noindex}
 assert all(row['url'] in pages for row in read(out/'search-index.json'))

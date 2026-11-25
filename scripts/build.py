@@ -79,8 +79,8 @@ def searchform():
     return '<form class="query" action="/search/"><input type="search" name="q" aria-label="搜索关键词" placeholder="搜索视频、频道、平台或指南"><button>搜索</button></form>'
 def livetiles(seq):
     return grid(tile(lurl(c),c['title'],c['category']+' · 官方观看入口') for c in seq)
-def platformlist(seq):
-    return grid(tile('/directory/'+x['id']+'/',x['name'],x['desc']) for x in seq)
+def platformlist(seq,anchors=False):
+    return grid(tile('/directory/'+x['id']+'/',x['name'],x['desc']).replace('<a ', '<a id="'+esc(x['id'])+'" ',1) if anchors else tile('/directory/'+x['id']+'/',x['name'],x['desc']) for x in seq)
 guides=[]
 def from_legacy(f):
     s=f.read_text()
@@ -92,6 +92,11 @@ for f in sorted((ROOT/'guides').glob('*.html')):
     t,d,body=from_legacy(f);p='/guides/'+f.name;guides.append((p,t,d))
     listrow(t,d,p,'指南')
     page(p,t,d,body+actions()+section('继续浏览',grid([tile('/live/','电视直播','各频道官方观看入口'),tile('/directory/','平台导航','查找电视服务、播放器及设备')])),('/guides/','指南'))
+for item in read(DATA/'guides.json'):
+    p='/guides/'+item['id']+'/';t=item['title'];d=item['description']
+    body=intro(t,d)+'<article class="reading">'+''.join('<h2>'+esc(h)+'</h2><p>'+esc(text)+'</p>' for h,text in item['sections'])+'</article>'
+    page(p,t,d,body+actions()+section('继续阅读',grid(tile(url,name,'') for url,name in item['related'])),('/guides/','指南'))
+    guides.append((p,t,d));listrow(t,d,p,'指南')
 def guidetiles(seq):
     return grid(tile(p,t,d) for p,t,d in seq)
 page('/guides/','实用观看指南','从选择正版平台到排查电视播放问题。',intro('实用观看指南')+guidetiles(guides))
@@ -102,17 +107,17 @@ for v in video:
     other=[x for x in video if x!=v];same=[x for x in other if x['category']==cat]
     related=[x for x in other if x not in same][:4]
     schema=dict({'@context':'https://schema.org','@type':'VideoObject'},name=t,description=d,thumbnailUrl=v['thumbnail'],uploadDate=v['publishedAt'],duration='PT'+str(v['duration'])+'S')
+    if v.get('regionRestriction'):
+        rules=v['regionRestriction'];body_regions='；'.join(('仅限' if k=='allowed' else '不适用')+'地区代码 '+', '.join(codes) for k,codes in rules.items())
+        play += '<p>'+esc(body_regions)+'</p>'
     if v['embeddable']:schema['embedUrl']=src
-    body=intro(t)+f'<p class="meta">{link(curl(cat),categories[cat])}　·　{esc(v["sourceName"])}　·　原片发布 {esc(v["publishedAt"][:10])}　·　{duration(v)}</p>'+play+'<p id="player-status" role="status"></p>'+actions(p,True)+f'<article class="reading"><h2>关于这段视频</h2><p>{esc(d)}</p><dl><dt>原标题</dt><dd>{esc(v["originalTitle"])}</dd><dt>发布者与署名</dt><dd>{esc(v["sourceName"])} · {esc(v.get("credit",v["sourceName"]))}</dd><dt>标签</dt><dd>{esc("、".join(v["tags"]))}</dd></dl>'+link(v['sourceUrl'],'前往原平台观看 ↗')+'　'+link('/about.html#contact','反馈播放问题')+'</article>'
+    body=intro(t)+f'<p class="meta">{link(curl(cat),categories[cat])}　·　{esc(v["sourceName"])}　·　原片发布 {esc(v["publishedAt"][:10])}　·　{duration(v)}</p>'+play+'<p id="player-status" role="status"></p>'+actions(p,True)+f'<article class="reading"><h2>关于这段视频</h2><p>{esc(d)}</p><dl><dt>原标题</dt><dd>{esc(v["originalTitle"])}</dd><dt>发布者与署名</dt><dd>{esc(v["sourceName"])} · {esc(v.get("credit",v["platform"].upper()))}</dd><dt>标签</dt><dd>{esc("、".join(v["tags"]))}</dd></dl>'+link(v['sourceUrl'],'前往原平台观看 ↗')+'　'+link('/about.html#contact','反馈播放问题')+'</article>'
     page(p,t,d,body+section('同分类视频',grid(card(x) for x in same[:4]))+section('相关推荐',grid(card(x) for x in related))+section('观看指南',guidetiles([next(g for g in guides if 'buffering' in g[0])])),(curl(cat),categories[cat]),v['thumbnail'],schema)
 # Preserve a usable landing page for formerly published items under review.
 for f in (DATA/'videos').glob('*.json'):
     record=read(f); path=wurl(record)
     if path not in sitemap and record['status']!='review':
         page(path,'视频暂不可用','这段视频已归档或正在复查。',intro('视频暂不可用','这段视频已归档或正在复查。')+link('/videos/','查看其他精选视频 →'),('/videos/','视频'),searchable=False)
-for k,n in categories.items():
-    seq=[v for v in video if v['category']==k]
-    page(curl(k),n,n+'精选视频与官方来源。',intro(n)+category_nav(k)+(grid(card(v) for v in seq) or '<p class="emptybox">这个分类暂时没有通过审核的视频。'+link('/videos/','浏览其他精选视频 →')+'</p>'),('/videos/','视频'),searchable=bool(seq))
 def paged(url,title,desc,seq,body,parent=None):
     size=24
     count=max(1,(len(seq)+size-1)//size)
@@ -122,6 +127,12 @@ def paged(url,title,desc,seq,body,parent=None):
         paging='<nav class="chips" aria-label="分页">'+''.join(link(dest(n),str(n)) for n in range(1,count+1))+'</nav>' if count>1 else ''
         heading=title if number==1 else title+' · 第 '+str(number)+' 页'
         page(path,heading,desc,intro(heading)+body+grid(card(v) for v in seq[(number-1)*size:number*size])+paging,parent)
+for k,n in categories.items():
+    seq=sorted((v for v in video if v['category']==k),key=lambda v:v['publishedAt'],reverse=True)
+    if seq:
+        paged(curl(k),n,n+'精选视频与官方来源。',seq,category_nav(k),('/videos/','视频'))
+    else:
+        page(curl(k),n,n+'精选视频与官方来源。',intro(n)+category_nav(k)+'<p class="emptybox">这个分类暂时没有通过审核的视频。'+link('/videos/','浏览其他精选视频 →')+'</p>',('/videos/','视频'),searchable=False)
 latest=sorted(video,key=lambda x:(x['publishedAt'],x['stableId']),reverse=True)
 paged('/videos/','精选视频','按主题探索经过审核的精选视频。',latest,category_nav())
 for c in live:
@@ -143,7 +154,7 @@ for f in sorted(ROOT.glob('*.html')):
     if f.name=='404.html':body=intro('页面不存在')+searchform()+link('/','返回首页')
     if f.name=='guides.html':body+=section('所有指南',guidetiles(guides))
     if f.name=='catalog.html':
-        body=intro(t,d)+'<nav class="chips">'+link('?type=all','全部内容')+''.join(link('?type='+k,n) for k,n in types.items())+'</nav>'+''.join('<section data-filter="'+k+'">'+section(n,platformlist(x for x in directory if x['type']==k))+'</section>' for k,n in types.items())
+        body=intro(t,d)+'<nav class="chips">'+link('?type=all','全部内容')+''.join(link('?type='+k,n) for k,n in types.items())+'</nav>'+''.join('<section data-filter="'+k+'">'+section(n,platformlist((x for x in directory if x['type']==k),anchors=True))+'</section>' for k,n in types.items())
     if f.name=='about.html':
         body=body.replace('帮助海外华人更容易找到合法、公开且适合电视大屏使用的娱乐服务。',site_desc)+ '<section id="contact" class="reading"><h2>反馈与联系</h2><p>请附上页面地址、设备和问题出现的时间。公开反馈请勿填写私人资料。</p>'+link('https://github.com/alititi-jackie/opendtv-site/issues','在 GitHub 提交站点反馈 ↗')+'</section>'
     if f.name=='legal.html':
@@ -154,7 +165,7 @@ hero=''
 if featured:
     v=featured[0]
     hero='<section class="spotlight"><div class="hero-copy"><p class="kicker">全球精选视频与电视门户</p><h1>开放视界，<br>发现精彩。</h1><p>'+site_desc+'</p>'+link('/videos/','浏览全部视频 →')+'</div>'+card(v,True)+'</section>'
-home=hero+category_nav()+section('编辑精选',grid(card(v) for v in featured[1:5]),'/videos/')+section('最新视频',grid(card(v) for v in latest[:8]),'/videos/')+section('电视直播入口',livetiles([next((c for c in live if c['id']==i),live[0]) for i in ('cctv4','cbs','sky','cctv10')]) if live else '', '/live/')
+home=(hero or intro('开放视界，发现精彩。',site_desc))+category_nav()+section('编辑精选',grid(card(v) for v in featured[1:5]),'/videos/')+section('最新视频',grid(card(v) for v in latest[:8]),'/videos/')+section('电视直播入口',livetiles([next((c for c in live if c['id']==i),live[0]) for i in ('cctv4','cbs','sky','cctv10')]) if live else '', '/live/')
 for name,cats in [('科技与纪录片',['science','nature']),('中国风光',['china']),('世界风光',['world']),('影视预告',['trailers'])]:
     home+=section(name,grid(card(v) for v in [v for v in video if v['category'] in cats][:4]),curl(cats[0]))
 home+=section('实用观看指南',guidetiles(guides[:4]),'/guides/')+section('影视平台导航',platformlist(directory[:4]),'/directory/')
@@ -165,7 +176,7 @@ if '推荐组合' in old:
     dest=out/'directory/index.html';dest.write_text(dest.read_text().replace('</main>',bundles+'</main>'))
 page('/','OpenDTV 全球精选视频与电视门户',site_desc,home or intro('开放视界，发现精彩。'))
 page('/search/','站内搜索','查找视频、直播、平台和指南。',intro('站内搜索')+searchform()+'<div id="results" aria-live="polite"></div>',searchable=False)
-page('/favorites/','我的收藏','本机收藏及最近打开的播放器。',intro('我的收藏','收藏和记录仅保存在当前浏览器。清除网站数据或更换设备后无法恢复。')+'<div id="saved"></div><h2>最近打开的播放器</h2><p>按点击加载播放器的时间排列。</p><button data-clear>清除最近记录</button><div id="recent"></div>',searchable=False)
+page('/favorites/','我的收藏','本机收藏及最近打开的播放器。',intro('我的收藏','收藏和记录仅保存在当前浏览器。清除网站数据或更换设备后无法恢复。')+'<div id="saved"></div><h2>最近观看</h2><p>仅列出官方播放器已确认开始播放的视频。</p><button data-clear-watched>清除观看记录</button><div id="watched"></div><h2>最近打开的播放器</h2><p>按点击加载播放器的时间排列。</p><button data-clear>清除最近记录</button><div id="recent"></div>',searchable=False)
 write(out/'search-index.json',index)
 (out/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+base+p+'</loc></url>' for p in sitemap)+'</urlset>')
 import hashlib

@@ -34,6 +34,7 @@ def main():
         missing=(old.get('misses',0)+int(previous) if result=='missing' else 0 if result=='ok' else old.get('misses',0))
         hidden=(result=='unavailable' or missing>=2 or (old.get('hidden',False) and result not in ('ok','external')))
         state[key]=dict(old,checked=str(today),result=result,misses=missing,hidden=hidden)
+        if result=='unavailable':state[key].pop('metadata',None)
     jobs={}
     records=[read(f) for f in (DATA/'videos').glob('*.json')]
     yt=[v for v in records if v['platform']=='youtube' and v['status']=='approved']

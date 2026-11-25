@@ -1,7 +1,7 @@
 'use strict';
 const $ = selector => document.querySelector(selector);
 const pagePath = location.pathname;
-const keys = { saved: 'opendtv.saved.v1', recent: 'opendtv.opened.v1' };
+const keys = { saved: 'opendtv.saved.v1', recent: 'opendtv.opened.v1', watched:'opendtv.watched.v1' };
 let toastTimer;
 function notify(message) {
   $('#notice').textContent = message;
@@ -62,12 +62,12 @@ async function entries() {
 async function renderLists() {
   const data = await entries();
   const map = new Map(data.map(row => [row.url,row]));
-  for (const [slot,key] of [['saved',keys.saved],['recent',keys.recent]]) {
+  for (const [slot,key] of [['saved',keys.saved],['recent',keys.recent],['watched',keys.watched]]) {
     const target = document.getElementById(slot);
     target.replaceChildren();
     const rows = stored(key).map(p => map.get(p)).filter(Boolean);
     if (rows.length) showRows(target,rows,slot === 'saved');
-    else target.textContent = slot === 'saved' ? '还没有收藏。' : '还没有打开过播放器。';
+    else target.textContent = slot === 'saved' ? '还没有收藏。' : slot==='watched' ? '还没有已确认的观看记录。' : '还没有打开过播放器。';
   }
 }
 async function search() {
@@ -92,6 +92,26 @@ async function copyLink() {
   try { await navigator.clipboard.writeText(location.href); notify('链接已复制'); }
   catch { window.prompt('复制此链接', location.href); }
 }
+function trackPlayer(frame, platform) {
+  let recorded=false;
+  const onPlaying=()=>{
+    if (recorded) return;
+    recorded=remember(keys.watched,[pagePath,...stored(keys.watched).filter(p=>p!==pagePath)].slice(0,80));
+  };
+  const onError=()=>$('#player-status').textContent='播放器未能播放，请尝试下方的原平台入口。';
+  if (platform==='vimeo') {
+    const script=document.createElement('script');
+    script.src='/portal/vendor/vimeo-player-2.30.1.min.js';
+    script.onload=()=>{const api=new window.Vimeo.Player(frame);api.on('playing',onPlaying);api.on('error',onError);};
+    document.head.append(script);
+  } else if (platform==='youtube') {
+    window.onYouTubeIframeAPIReady=()=>new window.YT.Player(frame,{events:{
+      onStateChange:e=>{if(e.data===window.YT.PlayerState.PLAYING)onPlaying();},onError
+    }});
+    const script=document.createElement('script');
+    script.src='https://www.youtube.com/iframe_api';document.head.append(script);
+  }
+}
 document.addEventListener('click',async e => {
   const b = e.target.closest('button');
   if (!b) return;
@@ -104,10 +124,13 @@ document.addEventListener('click',async e => {
     const wrap=node('div',''), frame=document.createElement('iframe');
     wrap.className='frame'; frame.title=document.querySelector('h1').textContent;
     frame.allowFullscreen=true; frame.allow='encrypted-media; picture-in-picture; fullscreen';
+    if (b.dataset.platform==='youtube') {u.searchParams.set('enablejsapi','1');u.searchParams.set('origin',location.origin);}
     frame.referrerPolicy='strict-origin-when-cross-origin'; frame.src=u.href;
-    b.replaceWith(wrap); wrap.append(frame);
+    b.replaceWith(wrap); wrap.append(frame);trackPlayer(frame,b.dataset.platform);
     remember(keys.recent,[pagePath,...stored(keys.recent).filter(x=>x!==pagePath)].slice(0,80));
     $('#player-status').textContent='请在官方播放器内按播放。如播放器受地区或浏览器限制，可使用下方原平台入口。';
+  } else if (b.hasAttribute('data-clear-watched')) {
+    if (remember(keys.watched,[])) renderLists();
   } else if (b.hasAttribute('data-clear')) {
     if (remember(keys.recent,[])) renderLists();
   } else if (b.hasAttribute('data-share')) {
@@ -127,3 +150,9 @@ if (pagePath==='/catalog.html') {
   if (blocks.some(b=>b.dataset.filter===type)) blocks.forEach(b=>b.hidden=b.dataset.filter!==type);
 }
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
+
+const topButton=node('button','↑');
+topButton.type='button';topButton.className='back-to-top';topButton.setAttribute('aria-label','返回顶部');
+topButton.addEventListener('click',()=>scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'}));
+document.body.append(topButton);
+addEventListener('scroll',()=>topButton.classList.toggle('show',scrollY>500),{passive:true});

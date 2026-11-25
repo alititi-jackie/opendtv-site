@@ -24,7 +24,7 @@ jobs:
           key: availability-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: availability-v1-
       - name: Check official sources
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && !steps.history.outputs.cache-matched-key)
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: |
@@ -34,13 +34,13 @@ jobs:
             python scripts/health.py
           fi
       - name: Verify playback on official players
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && !steps.history.outputs.cache-matched-key)
         run: |
           python -m pip install --disable-pip-version-check playwright==1.58.0
           TEST_PLAYERS=1 python scripts/build.py
           python scripts/check_players.py
       - name: Save availability history
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && !steps.history.outputs.cache-matched-key)
         uses: actions/cache/save@v4
         with:
           path: health-output/state.json
@@ -51,13 +51,13 @@ jobs:
           python scripts/check.py
           node --check portal/site.js
       - name: Collect pending videos
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && !steps.history.outputs.cache-matched-key)
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         continue-on-error: true
         run: python scripts/catalog_ops.py fetch
       - name: Save review queue and availability report
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && !steps.history.outputs.cache-matched-key)
         uses: actions/upload-artifact@v4
         with:
           name: editorial-review

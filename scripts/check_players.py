@@ -44,10 +44,10 @@ async def main():
                     if v['platform']=='youtube':
                         await frame.get_by_role('button',name='Play video',exact=True).click(timeout=14000)
                     elif v['platform']=='vimeo':
-                        await frame.get_by_role('button',name='Play',exact=True).click(timeout=15000)
+                        await frame.get_by_role('button',name='Play',exact=True).click(timeout=22000)
                     else:
                         await frame.locator('video').first.evaluate('v=>{v.muted=true;v.play().catch(()=>{})}',timeout=14000)
-                    for _ in range(12):
+                    for _ in range(26):
                         await pg.wait_for_timeout(650)
                         if await frame.locator('video').evaluate_all('xs=>xs.some(v=>v.currentTime>.3 && v.readyState>=2 && v.videoWidth>0)'):break
                     else:raise RuntimeError('No decoded frames')

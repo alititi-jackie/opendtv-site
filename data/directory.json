@@ -39,13 +39,13 @@
     "id": "max",
     "type": "streaming",
     "icon": "M",
-    "name": "Max",
+    "name": "HBO Max",
     "desc": "电影、剧集、纪录片和品牌原创内容平台。",
     "tags": [
       "订阅",
       "美国"
     ],
-    "url": "https://www.max.com/"
+    "url": "https://www.hbomax.com/"
   },
   {
     "id": "hulu",
