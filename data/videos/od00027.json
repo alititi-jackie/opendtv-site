@@ -1,0 +1,26 @@
+{
+  "addedAt": "2026-11-25",
+  "category": "world",
+  "channelId": "us-nps",
+  "credit": "NPS",
+  "description": "锡安国家公园的官方导览片，原在公园的人类历史博物馆放映。维琴河切出的红色峡谷、摆渡车沿线的停靠点和主要步道入口，都在五分多钟里交代清楚，第一次去之前看一遍最省事。",
+  "duration": 324,
+  "embeddable": true,
+  "featured": false,
+  "lastCheckedAt": "2026-11-25",
+  "originalTitle": "Zion Introduction Movie",
+  "platform": "nps",
+  "playbackCheckedAt": "2026-11-25",
+  "publishedAt": "2020-10-14",
+  "sourceName": "美国国家公园管理局",
+  "sourceUrl": "https://www.nps.gov/media/video/view.htm?id=9FA3B222-155D-451F-67211732D9E00AEB",
+  "stableId": "od00027",
+  "status": "approved",
+  "tags": [
+    "锡安",
+    "国家公园"
+  ],
+  "thumbnail": "https://www.nps.gov/nps-audiovideo/legacy/zion/9FA3B222-155D-451F-67211732D9E00AEB/zion-ZionOrientationFinal-HD_splash.jpg",
+  "title": "锡安公园导览：走进红色峡谷",
+  "videoId": "9FA3B222-155D-451F-67211732D9E00AEB"
+}

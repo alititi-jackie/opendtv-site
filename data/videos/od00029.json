@@ -1,0 +1,25 @@
+{
+  "addedAt": "2026-11-25",
+  "category": "science",
+  "channelId": "us-nps",
+  "description": "一部动画短片，把拱门国家公园的来历讲透：三亿年前的盐层沉积、抬升与塌陷，再经雨水和重力慢慢雕刻，才有了今天两千多座天然石拱门。看懂原理再看风景，是完全不同的感受。",
+  "duration": 212,
+  "embeddable": true,
+  "featured": false,
+  "lastCheckedAt": "2026-11-25",
+  "originalTitle": "Geology of Arches",
+  "platform": "nps",
+  "playbackCheckedAt": "2026-11-25",
+  "publishedAt": "2020-10-14",
+  "sourceName": "美国国家公园管理局",
+  "sourceUrl": "https://www.nps.gov/media/video/view.htm?id=285EAB03-155D-451F-675A179E29B97247",
+  "stableId": "od00029",
+  "status": "approved",
+  "tags": [
+    "拱门",
+    "地质"
+  ],
+  "thumbnail": "https://www.nps.gov/nps-audiovideo/legacy/arch/285EAB03-155D-451F-675A179E29B97247/arch-vd_arch_formation1_splash.jpg",
+  "title": "拱门是怎样形成的：三亿年压缩成三分钟",
+  "videoId": "285EAB03-155D-451F-675A179E29B97247"
+}
