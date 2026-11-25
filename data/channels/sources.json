@@ -1,0 +1,39 @@
+[
+  {
+    "id": "us-nps",
+    "platform": "nps",
+    "name": "美国国家公园管理局",
+    "url": "https://www.nps.gov/media/multimedia-search.htm"
+  },
+  {
+    "id": "UCLA_DiR1FfKNvjuUpBHmylQ",
+    "platform": "youtube",
+    "name": "NASA",
+    "url": "https://www.youtube.com/channel/UCLA_DiR1FfKNvjuUpBHmylQ",
+    "category": "science"
+  },
+  {
+    "id": "vimeo-1958639",
+    "name": "Rob Whitworth",
+    "platform": "vimeo",
+    "url": "https://vimeo.com/robwhitworth"
+  },
+  {
+    "id": "vimeo-12389292",
+    "name": "27km",
+    "platform": "vimeo",
+    "url": "https://vimeo.com/27km"
+  },
+  {
+    "id": "vimeo-61707731",
+    "name": "Mia Hagerty",
+    "platform": "vimeo",
+    "url": "https://vimeo.com/miahagerty"
+  },
+  {
+    "id": "vimeo-17289425",
+    "name": "GOBELINS Paris",
+    "platform": "vimeo",
+    "url": "https://vimeo.com/gobelinspro"
+  }
+]
