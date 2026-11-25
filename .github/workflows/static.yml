@@ -48,6 +48,16 @@ jobs:
         with:
           path: health-output/state.json
           key: availability-v1-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Load last published page dates
+        if: github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p health-output
+          status=$(curl --silent --show-error --location --retry 3 --max-time 30 --output health-output/date-response --write-out '%{http_code}' https://opendtv.com/page-dates.json)
+          case "$status" in
+            200) mv health-output/date-response health-output/published-dates.json ;;
+            404) rm health-output/date-response ;;
+            *) echo "Cannot verify previous dates (HTTP $status)"; exit 1 ;;
+          esac
       - name: Build and test
         run: |
           python scripts/build.py

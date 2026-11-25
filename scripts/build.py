@@ -6,6 +6,15 @@ from pathlib import Path
 from urllib.parse import quote
 from model import ROOT, DATA, categories, videos, read, write, https, player, json
 
+from editorial import records, article
+directory_notes = records('directory')
+choice_notes = records('choices')
+checkpoints = records('checkpoints')
+live_notes = records('live')
+category_notes = records('categories')
+legacy_notes = records('legacy')
+legacy_tasks = records('legacy-tables')
+
 out = ROOT / 'dist'
 if out.exists():
     shutil.rmtree(out)
@@ -66,12 +75,19 @@ def page(url,title,desc,body,parent=None,photo='',schema=None,searchable=True,le
     bread='<nav class="crumb" aria-label="面包屑">'+' <span>›</span> '.join(link(p,t) if p!=url else esc(t) for p,t in crumbs)+'</nav>' if with_crumb else ''
     structured=[{'@context':'https://schema.org','@type':'BreadcrumbList','itemListElement':[{'@type':'ListItem','position':i,'name':t,'item':base+p} for i,(p,t) in enumerate(crumbs,1)]}] if with_crumb else []
     if schema:structured.append(schema)
-    meta=''.join(f'<meta property="og:{k}" content="{esc(v)}">' for k,v in dict(title=title+'｜OpenDTV',description=desc,url=base+url,image=photo or base+'/assets/social-card.svg',type='video.other' if schema else 'website').items())
+    if not with_crumb:
+        publisher = base + '/#organization'
+        structured = [
+            {'@context':'https://schema.org','@type':'WebSite','@id':base+'/#website','url':base+'/', 'name':'OpenDTV','inLanguage':'zh-CN','publisher':{'@id':publisher}},
+            {'@context':'https://schema.org','@type':'Organization','@id':publisher,'name':'OpenDTV','url':base+'/'}
+        ]
+    share_image = base + '/assets/social-card.png'
+    meta=''.join(f'<meta property="og:{k}" content="{esc(v)}">' for k,v in dict(title=title+'｜OpenDTV',description=desc,url=base+url,image=share_image,type='video.other' if schema else 'website').items())
     logo='<a class="wordmark" href="/" aria-label="OpenDTV 首页"><img src="/assets/logo.svg" alt="OpenDTV"></a>'
     header='<header class="mast"><div class="mastin">'+logo+'<nav class="primary" aria-label="主导航">'+''.join(f'<a href="{p}" {"aria-current=page" if active==p else ""}>{n}</a>' for p,n in nav)+'</nav><nav class="tools">'+link('/search/','搜索')+link('/favorites/','收藏')+'<a href="https://go.openaa.com/"><b>Go.</b>OpenAA</a></nav></div></header>'
     footer='<footer class="foot"><div><strong>OpenDTV · 开放视界，发现精彩。</strong><p>全球精选视频与电视门户 · opendtv.com</p><nav>'+ '　'.join(link(p,t) for p,t in [('/about.html','关于本站'),('/legal.html#copyright','版权声明'),('/legal.html#privacy','隐私政策'),('/about.html#contact','联系我们')])+'</nav><small>本站主要提供合法视频嵌入、内容整理及官方观看入口。第三方视频的版权归原权利人所有，播放服务由相应平台提供。</small></div></footer>'
     ld=json.dumps(structured,ensure_ascii=False).replace('<',r'\u003c')
-    save(url,f'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{esc(title)}｜OpenDTV</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{base+url}">{meta}<meta name="twitter:card" content="summary_large_image"><link rel="icon" href="/assets/favicon.svg"><link rel="manifest" href="/manifest.webmanifest"><link rel="stylesheet" href="/style-v2.css"><link rel="stylesheet" href="/portal/site.css">'+('' if searchable else '<meta name="robots" content="noindex,follow">')+f'<script type="application/ld+json">{ld}</script><script defer src="/portal/site.js"></script></head><body>{header}<main class="shell">{bread}{body}</main>{footer}<div id="notice" role="status"></div></body></html>')
+    save(url,f'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{esc(title)}｜OpenDTV</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{base+url}">{meta}<meta name="twitter:image" content="{share_image}"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="/assets/favicon.svg"><link rel="manifest" href="/manifest.webmanifest"><link rel="stylesheet" href="/style-v2.css"><link rel="stylesheet" href="/portal/site.css">'+('' if searchable else '<meta name="robots" content="noindex,follow">')+f'<script type="application/ld+json">{ld}</script><script defer src="/portal/site.js"></script></head><body>{header}<main class="shell">{bread}{body}</main>{footer}<div id="notice" role="status"></div></body></html>')
     if searchable:sitemap.append(url)
 def intro(title,desc=''):
     return '<div class="intro"><h1>'+esc(title)+'</h1>'+('<p>'+esc(desc)+'</p>' if desc else '')+'</div>'
@@ -127,22 +143,52 @@ def paged(url,title,desc,seq,body,parent=None):
         paging='<nav class="chips" aria-label="分页">'+''.join(link(dest(n),str(n)) for n in range(1,count+1))+'</nav>' if count>1 else ''
         heading=title if number==1 else title+' · 第 '+str(number)+' 页'
         page(path,heading,desc,intro(heading)+body+grid(card(v) for v in seq[(number-1)*size:number*size])+paging,parent)
+def film_notes(items):
+    return ''.join('<p>'+link(wurl(v),v['title'])+'　'+esc(v['description'])+'</p>' for v in items)
+
 for k,n in categories.items():
     seq=sorted((v for v in video if v['category']==k),key=lambda v:v['publishedAt'],reverse=True)
     if seq:
-        paged(curl(k),n,n+'精选视频与官方来源。',seq,category_nav(k),('/videos/','视频'))
+        commentary = ''
+        if k in category_notes:
+            heading, first, second, companions = category_notes[k]
+            companion_ids = companions.split(',')
+            commentary = article([(heading,first),('观看线索',second)])
+            commentary += section('本类片目导读', film_notes(seq))
+            commentary += section('适合接着看的作品', film_notes([v for v in video if v['stableId'] in companion_ids]))
+        paged(curl(k),n,n+'精选视频与官方来源。',seq,category_nav(k)+commentary,('/videos/','视频'))
     else:
         page(curl(k),n,n+'精选视频与官方来源。',intro(n)+category_nav(k)+'<p class="emptybox">这个分类暂时没有通过审核的视频。'+link('/videos/','浏览其他精选视频 →')+'</p>',('/videos/','视频'),searchable=False)
 latest=sorted(video,key=lambda x:(x['publishedAt'],x['stableId']),reverse=True)
 paged('/videos/','精选视频','按主题探索经过审核的精选视频。',latest,category_nav())
 for c in live:
     p=lurl(c);https(c['url']);listrow(c['title'],c['description'],p,'直播',c['category'])
-    page(p,c['title'],c['description'],intro(c['title'],c['description'])+f'<div class="official"><p>{esc(c["category"])} · 官方观看入口</p>{link(c["url"],"打开频道官网 ↗")}</div>'+actions(p,True)+section('相关频道',livetiles([x for x in live if x!=c and x['category']==c['category']][:4]))+section('观看指南',guidetiles([next(g for g in guides if 'free-tv' in g[0])])),('/live/','直播'))
+    first, heading, detail = live_notes[c['id']]
+    is_cctv = c['id'].startswith('cctv')
+    route = ('在电脑或手机浏览器打开本页上方的央视网频道入口，先核对台标，再看播放器旁当前时段的节目。手机也可在央视频官方应用按频道名称查找。节目单通常按北京时间编排，海外观看跨过午夜时，请把日期一并换算。'
+             if is_cctv else '从本页上方进入电视台官方网站，选择直播播放器并留意画面上的频道名称。若页面同时展示现场连线、新闻剪辑和全天新闻台，先选标为 Live 的主频道。移动设备可以用浏览器打开同一入口，安装应用时从电视台官网前往对应商店。')
+    access = ('央视网公开展示频道与节目单，具体场次能否在当地播放，由该节目的网络播出授权决定。网页能打开、手机已登录或拥有其他平台会员，都不能保证海外能看同一场直播。若官方播放器提示地区或账号要求，请按该场说明处理。'
+              if is_cctv else '这个入口指向新闻机构公开提供的新闻直播。进入官网与购买电视套餐是两件事。能否直接开播、应用是否要求登录以及当地的播放权，以所选直播画面提示为准。若某段现场信号已结束，可在同一机构的节目栏目里查完整报道。')
+    if c['id']=='cctv2':
+        detail += ' 如果片中只给出一位经营者的报价，可以再查节目有没有交代样本量、销售渠道和计价单位。同一商品的批发价与零售价适合回答不同问题。'
+    guide = article([('这个频道适合看什么',first),(heading,detail),('网页与手机观看',route),('登录、费用与地区',access)])
+    page(p,c['title'],c['description'],intro(c['title'],c['description'])+f'<div class="official"><p>{esc(c["category"])} · 官方观看入口</p>{link(c["url"],"打开频道官网 ↗")}</div>'+guide+actions(p,True)+section('相关频道',livetiles([x for x in live if x!=c and x['category']==c['category']][:4]))+section('观看指南',guidetiles([next(g for g in guides if 'free-tv' in g[0])])),('/live/','直播'))
 page('/live/','电视直播','按地区与节目类型浏览官方电视直播入口。',intro('电视直播','选择频道后前往电视台官网，节目与可用地区以官方播放器为准。')+''.join(section(c,livetiles([x for x in live if x['category']==c])) for c in dict.fromkeys(x['category'] for x in live)))
+by_id = {x['id']: x for x in directory}
+guide_lookup = {Path(p).stem:(p,t,d) for p,t,d in guides}
 for x in directory:
     p='/directory/'+x['id']+'/';u=x['url'];u=https(u) if u.startswith('https:') else '/'+u
     listrow(x['name'],x['desc'],p,'导航',' '.join([types[x['type']],*x['tags']]))
-    page(p,x['name'],x['desc'],intro(x['name'],x['desc'])+'<div class="official"><p>'+esc(' · '.join(x['tags']))+'</p>'+link(u,'访问官方网站 ↗' if u.startswith('https:') else '查看使用指南 →')+'</div>'+actions(p,True)+section('相关平台与设备',platformlist([z for z in directory if z!=x and z['type']==x['type']][:4])),('/directory/','导航'))
+    first, pricing, guide_id = directory_notes[x['id']]
+    heading, scenario, peers = choice_notes[x['id']]
+    notes = article([('怎样使用'+x['name'],first),('费用与适用条件（2026 年 11 月）',pricing),(heading,scenario),checkpoints[x['id']]])
+    comparisons = ''
+    for peer_id in peers.split(','):
+        peer = by_id[peer_id]
+        comparisons += '<h3>'+link('/directory/'+peer_id+'/',peer['name'])+'</h3><p>'+esc(directory_notes[peer_id][0])+'</p>'
+    notes += section('与其他选择对照', comparisons)
+    notes += section('延伸阅读',guidetiles([guide_lookup[guide_id]]))
+    page(p,x['name'],x['desc'],intro(x['name'],x['desc'])+'<div class="official"><p>'+esc(' · '.join(x['tags']))+'</p>'+link(u,'访问官方网站 ↗' if u.startswith('https:') else '查看使用指南 →')+'</div>'+notes+actions(p,True)+section('相关平台与设备',platformlist([z for z in directory if z!=x and z['type']==x['type']][:4])),('/directory/','导航'))
 def dirbody():
     return ''.join(section(n,platformlist(x for x in directory if x['type']==k),'/'+k+'.html') for k,n in types.items())
 page('/directory/','平台导航','浏览影视平台、电视服务、播放器、投屏工具及电视设备。',intro('平台导航')+dirbody())
@@ -152,9 +198,16 @@ for f in sorted(ROOT.glob('*.html')):
     if f.name=='index.html':continue
     t,d,body=from_legacy(f);p='/'+f.name;parent=('/directory/','导航') if f.stem in [*types,'catalog'] else None
     if f.name=='404.html':body=intro('页面不存在')+searchform()+link('/','返回首页')
-    if f.name=='guides.html':body+=section('所有指南',guidetiles(guides))
+    if f.stem in legacy_notes:
+        t,d,*links = legacy_notes[f.stem]
+        body=intro(t,d)+section('按需要选择',grid(tile(links[i],links[i+1],'') for i in range(0,len(links),2)))
+        tasks = legacy_tasks[f.stem]
+        body += article(list(zip(tasks[::2],tasks[1::2])))
+        body+=link('/guides/' if f.stem=='guides' else '/directory/', '浏览完整栏目 →')
     if f.name=='catalog.html':
-        body=intro(t,d)+'<nav class="chips">'+link('?type=all','全部内容')+''.join(link('?type='+k,n) for k,n in types.items())+'</nav>'+''.join('<section data-filter="'+k+'">'+section(n,platformlist((x for x in directory if x['type']==k),anchors=True))+'</section>' for k,n in types.items())
+        t='按名称与类型查找平台、应用和设备'
+        d='记得品牌名时，可在下面的分类索引直接定位条目。找单个电视台请进直播栏目，找视频作品请用站内搜索。'
+        body=intro(t,d)+link('/live/','查找电视台')+'　'+link('/search/','搜索全站')+'　'+link('/directory/','浏览分类导航')+'<nav class="chips">'+link('?type=all','全部内容')+''.join(link('?type='+k,n) for k,n in types.items())+'</nav>'+''.join('<section data-filter="'+k+'">'+section(n,platformlist((x for x in directory if x['type']==k),anchors=True))+'</section>' for k,n in types.items())
     if f.name=='about.html':
         body=body.replace('帮助海外华人更容易找到合法、公开且适合电视大屏使用的娱乐服务。',site_desc)+ '<section id="contact" class="reading"><h2>反馈与联系</h2><p>请附上页面地址、设备和问题出现的时间。公开反馈请勿填写私人资料。</p>'+link('https://github.com/alititi-jackie/opendtv-site/issues','在 GitHub 提交站点反馈 ↗')+'</section>'
     if f.name=='legal.html':
@@ -178,7 +231,9 @@ page('/','OpenDTV 全球精选视频与电视门户',site_desc,home or intro('�
 page('/search/','站内搜索','查找视频、直播、平台和指南。',intro('站内搜索')+searchform()+'<div id="results" aria-live="polite"></div>',searchable=False)
 page('/favorites/','我的收藏','本机收藏及最近打开的播放器。',intro('我的收藏','收藏和记录仅保存在当前浏览器。清除网站数据或更换设备后无法恢复。')+'<div id="saved"></div><h2>最近观看</h2><p>仅列出官方播放器已确认开始播放的视频。</p><button data-clear-watched>清除观看记录</button><div id="watched"></div><h2>最近打开的播放器</h2><p>按点击加载播放器的时间排列。</p><button data-clear>清除最近记录</button><div id="recent"></div>',searchable=False)
 write(out/'search-index.json',index)
-(out/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+base+p+'</loc></url>' for p in sitemap)+'</urlset>')
+from sitemap_dates import dates_for
+modified = dates_for(out,sitemap)
+(out/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+base+p+'</loc><lastmod>'+modified[p]+'</lastmod></url>' for p in sitemap)+'</urlset>')
 import hashlib
 stamp=hashlib.sha256(b''.join(f.read_bytes() for f in sorted(out.rglob('*')) if f.is_file())).hexdigest()[:12]
 sw=out/'sw.js';sw.write_text(sw.read_text().replace('BUILD_ID',stamp))
