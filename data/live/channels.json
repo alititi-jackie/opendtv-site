@@ -1,0 +1,191 @@
+[
+  {
+    "id": "cctv1",
+    "title": "CCTV-1 综合",
+    "category": "中国电视",
+    "url": "https://tv.cctv.com/live/cctv1/",
+    "match": "CCTV-1",
+    "checked": "2026-11-24",
+    "description": "央视网提供的CCTV-1 综合官方频道页，可查看节目安排并进入播放器。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "cctv2",
+    "title": "CCTV-2 财经",
+    "category": "财经资讯",
+    "url": "https://tv.cctv.com/live/cctv2/",
+    "match": "CCTV-2",
+    "checked": "2026-11-24",
+    "description": "央视网提供的CCTV-2 财经官方频道页，可查看节目安排并进入播放器。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "cctv4",
+    "title": "CCTV-4 中文国际",
+    "category": "中国电视",
+    "url": "https://tv.cctv.com/live/cctv4/",
+    "match": "CCTV-4",
+    "checked": "2026-11-24",
+    "description": "央视网提供的CCTV-4 中文国际官方频道页，可查看节目安排并进入播放器。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "cctv7",
+    "title": "CCTV-7 国防军事",
+    "category": "中国电视",
+    "url": "https://tv.cctv.com/live/cctv7/",
+    "match": "CCTV-7",
+    "checked": "2026-11-24",
+    "description": "央视网提供的CCTV-7 国防军事官方频道页，可查看节目安排并进入播放器。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "cctv9",
+    "title": "CCTV-9 纪录",
+    "category": "科技教育",
+    "url": "https://tv.cctv.com/live/cctvjilu/",
+    "match": "CCTV-9",
+    "checked": "2026-11-24",
+    "description": "央视网提供的CCTV-9 纪录官方频道页，可查看节目安排并进入播放器。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "cctv10",
+    "title": "CCTV-10 科教",
+    "category": "科技教育",
+    "url": "https://tv.cctv.com/live/cctv10/",
+    "match": "CCTV-10",
+    "checked": "2026-11-24",
+    "description": "央视网提供的CCTV-10 科教官方频道页，可查看节目安排并进入播放器。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "cctv11",
+    "title": "CCTV-11 戏曲",
+    "category": "中国电视",
+    "url": "https://tv.cctv.com/live/cctv11/",
+    "match": "CCTV-11",
+    "checked": "2026-11-24",
+    "description": "央视网提供的CCTV-11 戏曲官方频道页，可查看节目安排并进入播放器。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "cctv12",
+    "title": "CCTV-12 社会与法",
+    "category": "中国电视",
+    "url": "https://tv.cctv.com/live/cctv12/",
+    "match": "CCTV-12",
+    "checked": "2026-11-24",
+    "description": "央视网提供的CCTV-12 社会与法官方频道页，可查看节目安排并进入播放器。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "cctv13",
+    "title": "CCTV-13 新闻",
+    "category": "国际新闻",
+    "url": "https://tv.cctv.com/live/cctv13/",
+    "match": "CCTV-13",
+    "checked": "2026-11-24",
+    "description": "央视网提供的CCTV-13 新闻官方频道页，可查看节目安排并进入播放器。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "cctv14",
+    "title": "CCTV-14 少儿",
+    "category": "中国电视",
+    "url": "https://tv.cctv.com/live/cctvchild/",
+    "match": "CCTV-14",
+    "checked": "2026-11-24",
+    "description": "央视网提供的CCTV-14 少儿官方频道页，可查看节目安排并进入播放器。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "cctv15",
+    "title": "CCTV-15 音乐",
+    "category": "中国电视",
+    "url": "https://tv.cctv.com/live/cctv15/",
+    "match": "CCTV-15",
+    "checked": "2026-11-24",
+    "description": "央视网提供的CCTV-15 音乐官方频道页，可查看节目安排并进入播放器。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "cctv17",
+    "title": "CCTV-17 农业农村",
+    "category": "中国电视",
+    "url": "https://tv.cctv.com/live/cctv17/",
+    "match": "CCTV-17",
+    "checked": "2026-11-24",
+    "description": "央视网提供的CCTV-17 农业农村官方频道页，可查看节目安排并进入播放器。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "cbs",
+    "title": "CBS News 24/7",
+    "category": "美国电视",
+    "url": "https://www.cbsnews.com/live/",
+    "match": "CBS News",
+    "checked": "2026-11-24",
+    "description": "通过CBS News 24/7的官方直播页面查看当前节目。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "abc",
+    "title": "ABC News Live",
+    "category": "美国电视",
+    "url": "https://abcnews.com/Live",
+    "match": "ABC News",
+    "checked": "2026-11-24",
+    "description": "通过ABC News Live的官方直播页面查看当前节目。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "sky",
+    "title": "Sky News",
+    "category": "国际新闻",
+    "url": "https://news.sky.com/watch-live",
+    "match": "Sky News",
+    "checked": "2026-11-24",
+    "description": "通过Sky News的官方直播页面查看当前节目。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "aljazeera",
+    "title": "Al Jazeera English",
+    "category": "国际新闻",
+    "url": "https://www.aljazeera.com/live",
+    "match": "Al Jazeera",
+    "checked": "2026-11-24",
+    "description": "通过Al Jazeera English的官方直播页面查看当前节目。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "cgtn",
+    "title": "CGTN 英语频道",
+    "category": "国际新闻",
+    "url": "https://www.cgtn.com/tv",
+    "match": "CGTN",
+    "checked": "2026-11-24",
+    "description": "通过CGTN 英语频道的官方直播页面查看当前节目。播放范围及节目时段以频道页面为准。"
+  },
+  {
+    "id": "cctv3",
+    "title": "CCTV-3 综艺",
+    "category": "中国电视",
+    "url": "https://tv.cctv.com/live/cctv3/",
+    "match": "CCTV-3",
+    "checked": "2026-11-24",
+    "description": "在央视网查看综艺频道节目表与官方播放器。赛事、剧集及其他节目可能因所在地区而有播放限制。"
+  },
+  {
+    "id": "cctv5",
+    "title": "CCTV-5 体育",
+    "category": "中国电视",
+    "url": "https://tv.cctv.com/live/cctv5/",
+    "match": "CCTV-5",
+    "checked": "2026-11-24",
+    "description": "在央视网查看体育频道节目表与官方播放器。赛事、剧集及其他节目可能因所在地区而有播放限制。"
+  },
+  {
+    "id": "cctv6",
+    "title": "CCTV-6 电影",
+    "category": "中国电视",
+    "url": "https://tv.cctv.com/live/cctv6/",
+    "match": "CCTV-6",
+    "checked": "2026-11-24",
+    "description": "在央视网查看电影频道节目表与官方播放器。赛事、剧集及其他节目可能因所在地区而有播放限制。"
+  },
+  {
+    "id": "cctv8",
+    "title": "CCTV-8 电视剧",
+    "category": "中国电视",
+    "url": "https://tv.cctv.com/live/cctv8/",
+    "match": "CCTV-8",
+    "checked": "2026-11-24",
+    "description": "在央视网查看电视剧频道节目表与官方播放器。赛事、剧集及其他节目可能因所在地区而有播放限制。"
+  }
+]

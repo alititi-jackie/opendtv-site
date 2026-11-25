@@ -1,6 +1,6 @@
 /* OpenDTV service worker: offline support + installability.
  * Bump CACHE_VERSION when shipping changes that must reach users immediately. */
-const CACHE_VERSION = 'opendtv-v2';
+const CACHE_VERSION = 'opendtv-portal-BUILD_ID';
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 
@@ -21,7 +21,9 @@ const PRECACHE_URLS = [
   '/guides/install-tv-apps-safely.html',
   '/guides/fix-tv-buffering.html',
   '/style-v2.css',
-  '/app-v2.js',
+  '/portal/site.js',
+  '/portal/site.css',
+  '/search-index.json',
   '/manifest.webmanifest',
   '/assets/favicon.svg',
   '/assets/logo.svg',
@@ -95,7 +97,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  if (request.mode === 'navigate') {
+  if (request.mode === 'navigate' || url.pathname === '/search-index.json') {
     event.respondWith(networkFirst(request, PAGE_CACHE, '/'));
     return;
   }
